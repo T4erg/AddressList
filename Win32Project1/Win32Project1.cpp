@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "sqlite3.h"
 #include<stdlib.h>
-
+/*sonme function about deal addresslist*/
 void fun_add(sqlite3 *db);
 void fun_find(sqlite3 *db);
 void fun_del(sqlite3 *db);
@@ -12,20 +12,21 @@ int _tmain(int argc, _TCHAR* argv[])
 	sqlite3 * db;
 	char * pErr,ch;
 	int x=1;
-	int rc = sqlite3_open("tongxunlist.db",&db);
+	int rc = sqlite3_open("AddressList.db",&db);
 	if(rc != SQLITE_OK)
 	{
 		printf("Open database error\n");
 		system("pause");
 		return -2;
 	}
-	const char * sql="CREATE TABLE IF NOT EXISTS tongxunlist( \
+	const char * sql="CREATE TABLE IF NOT EXISTS AddressList( \
 					 per_id INTEGER PRIMARY KEY, \
 					 per_name VARCHAR(16) NOT NULL, \
 					 per_sex VARCHAR(2), \
 					 per_number VARCHAR(20), \
 					 per_email VARCHAR(256), \
-					 per_address VARCHAR(256));";
+					 per_address VARCHAR(256),\
+					 per_zipcode VARCHAR(20));";
 	rc=sqlite3_exec(db,sql,NULL,NULL,&pErr);
 	if(rc!=SQLITE_OK)
 	{
@@ -67,7 +68,7 @@ int _tmain(int argc, _TCHAR* argv[])
 void fun_add(sqlite3 *db)
 {
 	while (getchar()!='\n');
-	char Name[16],Sex[8],Num[32],Email[256],Address[256];
+	char Name[16],Sex[8],Num[32],Email[256],Address[256],Zipcode[32];
 	printf("please input name:");
 	gets(Name);
 	printf("please input sex:");
@@ -78,8 +79,10 @@ void fun_add(sqlite3 *db)
 	gets(Email);
 	printf("please inout address:");
 	gets(Address);
+	printf("please input zipcode:");
+	gets(Zipcode);
 	char sql[512];
-	sprintf(sql,"INSERT INTO tongxunlist VALUES (null,'%s','%s','%s','%s','%s');",Name,Sex,Num,Email,Address);  //null是编号，自动生成，传入空即可
+	sprintf(sql,"INSERT INTO AddressList VALUES (null,'%s','%s','%s','%s','%s','%s');",Name,Sex,Num,Email,Address,Zipcode);  //null是编号，自动生成，传入空即可
 	int rc=sqlite3_exec(db,sql,NULL,NULL,NULL);
 	if(rc!=SQLITE_OK)
 	{
@@ -94,13 +97,13 @@ void fun_find(sqlite3 *db)
 	sqlite3_stmt * stmt;
 	printf("请输入要查询的联系人的编号：\n");
 	scanf("%d",&per_num);
-	sprintf(sql,"select * from tongxunlist where per_id='%d'",per_num);
+	sprintf(sql,"select * from AddressList where per_id='%d'",per_num);
 	sqlite3_prepare(db,sql,-1,&stmt,NULL);   //第三个参数我写的是-1，这个参数含义是前面 sql 语句的长度。如果小于0，sqlite会自动计算它的长度（把sql语句当成以/0结尾的字符串）。
 	if(sqlite3_step(stmt)==SQLITE_ROW)
 	{
-		printf("编号:%d\n姓名:%s\n电话:%s\ne-mail:%s\n地址:%s\n",
+		printf("编号:%d\n姓名:%s\n电话:%s\ne-mail:%s\n地址:%s\n邮编:%s\n",
 			sqlite3_column_int(stmt,0),sqlite3_column_text(stmt,1),sqlite3_column_text(stmt,2),
-			sqlite3_column_text(stmt,3),sqlite3_column_text(stmt,4),sqlite3_column_text(stmt,5));
+			sqlite3_column_text(stmt, 3), sqlite3_column_text(stmt, 4), sqlite3_column_text(stmt, 5), sqlite3_column_text(stmt, 6));
 	}
 	else
 	{
@@ -115,7 +118,7 @@ void fun_del(sqlite3*db)
 	char sql[256];
 	printf("请输入要删除的联系人编号：\n");
 	scanf("%d",&n);
-	sprintf(sql,"delete from tongxunlist where per_id=%d",n);
+	sprintf(sql,"delete from AddressList where per_id=%d",n);
 	int rc=sqlite3_exec(db,sql,NULL,NULL,NULL);
 	if(SQLITE_OK==rc)
 	{
@@ -130,12 +133,12 @@ void fun_del(sqlite3*db)
 void fun_all(sqlite3 * db)
 {
 	sqlite3_stmt * stmt;
-	sqlite3_prepare(db,"select *from tongxunlist",-1,&stmt,NULL);    
+	sqlite3_prepare(db,"select *from AddressList",-1,&stmt,NULL);    
 	while(sqlite3_step(stmt)==SQLITE_ROW)
 	{
-		printf("编号:%d\n姓名:%s\n性别:%s\n电话:%s\ne-mail:%s\n地址:%s\n\n",
+		printf("编号:%d\n姓名:%s\n性别:%s\n电话:%s\ne-mail:%s\n地址:%s\n邮编:%s\n\n",
 			sqlite3_column_int(stmt,0),sqlite3_column_text(stmt,1),sqlite3_column_text(stmt,2),
-			sqlite3_column_text(stmt,3),sqlite3_column_text(stmt,4),sqlite3_column_text(stmt,5));
+			sqlite3_column_text(stmt, 3), sqlite3_column_text(stmt, 4), sqlite3_column_text(stmt, 5), sqlite3_column_text(stmt, 6));
 	}
 	sqlite3_finalize(stmt);
 }
