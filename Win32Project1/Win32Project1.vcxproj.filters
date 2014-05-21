@@ -38,4 +38,9 @@
       <Filter>资源文件</Filter>
     </Library>
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\test1.jpg">
+      <Filter>资源文件</Filter>
+    </Image>
+  </ItemGroup>
 </Project>

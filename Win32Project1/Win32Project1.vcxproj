@@ -94,6 +94,9 @@
   <ItemGroup>
     <Library Include="..\sqlite3.lib" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\test1.jpg" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
